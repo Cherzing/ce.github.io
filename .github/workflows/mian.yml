@@ -1,57 +1,18 @@
-# workflow name
-name: actions single
-
-# 当有 push 到仓库和外部触发的时候就运行
-on: [push, repository_dispatch]
-
-# YQ_TOKEN
-# YUQUE_GIT_HEXO
+name: GitHub Actions Demo
+run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+on: [push]
 jobs:
-  deploy:
-    name: Deploy Hexo Public To Pages
+  Explore-GitHub-Actions:
     runs-on: ubuntu-latest
-    env:
-      TZ: Asia/Shanghai
-
     steps:
-      # check it to your workflow can access it
-      # from: https://github.com/actions/checkout
-      - name: Checkout Repository master branch
-        uses: actions/checkout@master
-
-      # from: https://github.com/actions/setup-node
-      - name: Setup Node.js 10.x
-        uses: actions/setup-node@master
-        with:
-          node-version: "10.x"
-
-      #安装依赖(包含yuque-hexo，此处无需安装) from https://github.com/x-cold/yuque-hexo
-      - name: Install dependencies
+      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
+      - name: List files in the repository
         run: |
-          npm install hexo-cli -g
-          npm install yuque-hexo -g
-          npm install
-
-      # 此处请勿使用hexo clean&&yuque-hexo（重新构建时无需此命令行）同步语雀文章
-      - name: yuque-hexo sync
-        env:
-          YUQUE_TOKEN: ${{ secrets.YUQUE_TOKEN_HEXO_SYNC_GITHUB_ONLINE}} # from: 这里是YUQUE_TOKEN: $不能随意改
-        run: |
-          hexo clean
-          yuque-hexo sync || yuque-hexo sync || yuque-hexo sync  # 用 || 来重试的次数
-
-      # 生成可访问的文档
-      - name: hexo generate
-        run: |
-          hexo g
-
-      # 生成pages且推送到文件仓库 from https://github.com/peaceiris/actions-gh-pages
-      - name: Deploy hexo to Github pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          deploy_key: ${{ secrets.DEPLOY_KEY }} # 此处为 hexo-deploy-key
-          external_repository: https://czlifetime.eu.org/ce.github.io/
-          publish_branch: master
-          publish_dir: ./public
-          commit_message: deploy githubPage
-          # commit_message: ${{ github.event.head_commit.message }}
+          ls ${{ github.workspace }}
+      - run: echo "🍏 This job's status is ${{ job.status }}."
